@@ -1,0 +1,97 @@
+###Get data from CSVs
+
+# Import pandas as pd
+import pandas as pd
+
+# Read the CSV and assign it to the variable data
+data = pd.read_csv('vt_tax_data_2016.csv')
+
+# View the first few lines of data
+print(data.head())
+
+###Get data from other flat files
+# Import pandas with the alias pd
+import pandas as pd
+
+# Load TSV using the sep keyword argument to set delimiter
+data = pd.read_csv("vt_tax_data_2016.tsv", sep="\t")
+
+# Plot the total number of tax returns by income group
+counts = data.groupby("agi_stub").N1.sum()
+counts.plot.bar()
+plt.show()
+
+###Import a subset of columns
+##The Vermont tax data contains 147 columns describing household composition, income sources, and taxes paid by ZIP code and income group. Most analyses don't need all these columns. In this exercise, you will create a data frame with fewer variables using read_csv()s usecols argument.
+
+# Create list of columns to use
+cols = ['zipcode','agi_stub','mars1','MARS2','NUMDEP']
+
+# Create data frame from csv using only selected columns
+data = pd.read_csv("vt_tax_data_2016.csv", usecols=cols)
+
+# View counts of dependents and tax returns by income level
+print(data.groupby("agi_stub").sum())
+
+###Import a file in chunks
+##When working with large files, it can be easier to load and process the data in pieces. Let's practice this workflow on the Vermont tax data.
+
+# Create data frame of next 500 rows with labeled columns
+vt_data_next500 = pd.read_csv("vt_tax_data_2016.csv", 
+                       		  nrows=500,
+                       		  skiprows=500,
+                       		  header=None, names=list(vt_data_first500))
+
+# View the Vermont data frames to confirm they're different
+print(vt_data_first500.head())
+print(vt_data_next500.head())
+
+###Specify data types
+##When loading a flat file, pandas infers the best data type for each column. Sometimes its guesses are off, particularly for numbers that represent groups or qualities instead of quantities. 
+# Load csv with no additional arguments
+data = pd.read_csv("vt_tax_data_2016.csv")
+
+# Print the data types
+print(data.dtypes)
+
+# Create dict specifying data types for agi_stub and zipcode
+data_types = {'agi_stub':'category',
+			  'zipcode':str}
+
+# Load csv using dtype to set correct data types
+data = pd.read_csv("vt_tax_data_2016.csv", dtype=data_types)
+
+# Print data types of resulting frame
+print(data.dtypes.head())
+
+###Set custom NA values
+##Part of data exploration and cleaning consists of checking for missing or NA values and deciding how to account for them. This is easier when missing values are treated as their own data type. and there are pandas functions that specifically target such NA values. pandas automatically treats some values as missing, but we can pass additional NA indicators with the na_values argument. Here, you'll do this to ensure that invalid ZIP codes in the Vermont tax data are coded as NA.
+# Create dict specifying that 0s in zipcode are NA values
+null_values = {'zipcode':0}
+
+# Load csv using na_values keyword argument
+data = pd.read_csv("vt_tax_data_2016.csv", 
+                   na_values=null_values)
+
+# View rows with NA ZIP codes
+print(data[data.zipcode.isna()])
+
+
+  # Set warn_bad_lines to issue warnings about bad records
+  data = pd.read_csv("vt_tax_data_2016_corrupt.csv", 
+                     error_bad_lines=False, 
+                     warn_bad_lines=True)
+  
+  # View first 5 records
+  print(data.head())
+  
+except pd.io.common.CParserError:
+    print("Your data contained rows that could not be parsed.")
+
+
+
+
+
+
+
+
